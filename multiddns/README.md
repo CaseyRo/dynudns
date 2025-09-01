@@ -1,6 +1,6 @@
 # Home Assistant Add-on: Multi-DDNS
 
-Automatically update Home Assistant multiple DDNS IPs address with integrated HTTPS support via Let's Encrypt. it currently supports the following DDNS services:
+Automatically update Home Assistant multiple DDNS IPs address with integrated HTTPS support via Let's Encrypt. It is distributed as a Home Assistant **add-on** and must be installed from the add-on store (not via HACS). It currently supports the following DDNS services:
  - [Duck DNS][duckdns]
  - [Dynu DNS][dynudns]
 
