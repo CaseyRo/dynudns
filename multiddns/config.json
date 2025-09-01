@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "slug": "multiddns",
   "description": "Free Dynamic DNS via Multi DDNS Provider with Let's Encrypt support",
-  "url": "https://github.com/modestpharaoh/hassio-addons/tree/master/multi-ddns",
+  "url": "https://github.com/CaseyRo/dynudns",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "services",
   "init": "false",
