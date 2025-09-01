@@ -14,16 +14,19 @@ from homeassistant.const import CONF_SCAN_INTERVAL
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-CONF_DOMAINS = "domains"
-CONF_DYNU_TOKEN = "dynu_token"
-CONF_DUCK_TOKEN = "duck_token"
-CONF_IPV4 = "ipv4"
-CONF_IPV6 = "ipv6"
-CONF_WILDCARD = "wildcard_alias"
-
-DEFAULT_IPV4 = "https://ipv4.text.wtfismyip.com"
-DEFAULT_IPV6 = "https://ipv6.text.wtfismyip.com"
-DEFAULT_INTERVAL = timedelta(minutes=5)
+from .const import (
+    CONF_DOMAINS,
+    CONF_DUCK_TOKEN,
+    CONF_DYNU_TOKEN,
+    CONF_IPV4,
+    CONF_IPV6,
+    CONF_UPDATE_INTERVAL,
+    CONF_WILDCARD,
+    DEFAULT_IPV4,
+    DEFAULT_IPV6,
+    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_UPDATE_INTERVAL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +38,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_IPV4, default=DEFAULT_IPV4): cv.string,
         vol.Optional(CONF_IPV6, default=DEFAULT_IPV6): cv.string,
         vol.Optional(CONF_WILDCARD, default=False): cv.boolean,
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_INTERVAL): cv.time_period,
+        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.time_period,
     }
 )
 
@@ -44,6 +47,15 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the Multi-DDNS sensor platform."""
     scan_interval: timedelta = config[CONF_SCAN_INTERVAL]
     async_add_entities([MultiDDNSSensor(hass, config, scan_interval)], True)
+
+
+async def async_setup_entry(hass, entry, async_add_entities):
+    """Set up Multi-DDNS sensor from a config entry."""
+    config = {**entry.data, **entry.options}
+    interval = timedelta(
+        minutes=config.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    )
+    async_add_entities([MultiDDNSSensor(hass, config, interval)], True)
 
 
 class MultiDDNSSensor(SensorEntity):

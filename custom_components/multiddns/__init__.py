@@ -8,6 +8,9 @@ import asyncio
 from pathlib import Path
 
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.config_entries import ConfigEntry
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,6 +62,17 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 )
 
     hass.services.async_register(
-        "multiddns", "issue_certificate", issue_certificate
+        DOMAIN, "issue_certificate", issue_certificate
     )
     return True
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up Multi-DDNS from a config entry."""
+    await hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unload a Multi-DDNS config entry."""
+    return await hass.config_entries.async_forward_entry_unload(entry, "sensor")
