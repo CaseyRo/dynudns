@@ -9,9 +9,9 @@ from pathlib import Path
 
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import Platform, CONF_EMAIL
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_DOMAINS, CONF_CERT_ISSUED
 
 PLATFORMS = [Platform.SENSOR]
 
@@ -73,6 +73,22 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Multi-DDNS from a config entry."""
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    data = entry.data
+    options = entry.options
+    domains = options.get(CONF_DOMAINS, data.get(CONF_DOMAINS, []))
+    email = options.get(CONF_EMAIL, data.get(CONF_EMAIL))
+    if domains and email and not data.get(CONF_CERT_ISSUED):
+        hass.async_create_task(
+            hass.services.async_call(
+                DOMAIN,
+                "issue_certificate",
+                {"domain": domains, "email": email},
+            )
+        )
+        hass.config_entries.async_update_entry(
+            entry, data={**data, CONF_CERT_ISSUED: True}
+        )
     return True
 
 

@@ -13,6 +13,7 @@ CONF_IPV4 = "ipv4"
 CONF_IPV6 = "ipv6"
 CONF_WILDCARD = "wildcard_alias"
 CONF_UPDATE_INTERVAL = "update_interval"
+CONF_CERT_ISSUED = "cert_issued"
 
 DEFAULT_IPV4 = "https://ipv4.text.wtfismyip.com"
 DEFAULT_IPV6 = "https://ipv6.text.wtfismyip.com"

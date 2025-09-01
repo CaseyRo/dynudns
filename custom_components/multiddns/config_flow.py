@@ -8,6 +8,7 @@ import re
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.const import CONF_EMAIL
 from homeassistant.core import callback
 from homeassistant.helpers import selector
 
@@ -20,6 +21,7 @@ from .const import (
     CONF_IPV6,
     CONF_WILDCARD,
     CONF_UPDATE_INTERVAL,
+    CONF_CERT_ISSUED,
     DEFAULT_IPV4,
     DEFAULT_IPV6,
     DEFAULT_UPDATE_INTERVAL,
@@ -38,6 +40,7 @@ class MultiDDNSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 for d in re.split(r"[\n,]+", user_input[CONF_DOMAINS])
                 if d.strip()
             ]
+            user_input[CONF_CERT_ISSUED] = False
             return self.async_create_entry(title="Multi-DDNS", data=user_input)
 
         data_schema = vol.Schema(
@@ -45,6 +48,7 @@ class MultiDDNSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_DOMAINS): selector.TextSelector(
                     selector.TextSelectorConfig(multiline=True)
                 ),
+                vol.Required(CONF_EMAIL): str,
                 vol.Optional(CONF_DYNU_TOKEN): str,
                 vol.Optional(CONF_DUCK_TOKEN): str,
                 vol.Optional(CONF_IPV4, default=DEFAULT_IPV4): str,
@@ -73,6 +77,10 @@ class MultiDDNSOptionsFlow(config_entries.OptionsFlowWithConfigEntry):
                 for d in re.split(r"[\n,]+", user_input[CONF_DOMAINS])
                 if d.strip()
             ]
+            self.hass.config_entries.async_update_entry(
+                self.config_entry,
+                data={**self.config_entry.data, CONF_CERT_ISSUED: False},
+            )
             return self.async_create_entry(data=user_input)
 
         data = {**self.config_entry.data, **self.config_entry.options}
@@ -84,6 +92,9 @@ class MultiDDNSOptionsFlow(config_entries.OptionsFlowWithConfigEntry):
                 ): selector.TextSelector(
                     selector.TextSelectorConfig(multiline=True)
                 ),
+                vol.Required(
+                    CONF_EMAIL, default=data.get(CONF_EMAIL, "")
+                ): str,
                 vol.Optional(
                     CONF_DYNU_TOKEN, default=data.get(CONF_DYNU_TOKEN, "")
                 ): str,
