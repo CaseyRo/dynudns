@@ -89,6 +89,10 @@ class MultiDDNSSensor(SensorEntity):
             if not self.dynu_token:
                 continue
 
+            if ipv4 is None and ipv6 is None:
+                _LOGGER.debug("No IP addresses retrieved; skipping Dynu update for %s", domain)
+                continue
+
             domain_id = self._domain_ids.get(domain)
             if domain_id is None:
                 domain_id = await self._get_dynu_domain_id(session, domain)
