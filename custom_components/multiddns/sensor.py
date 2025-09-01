@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 import logging
+from pathlib import Path
 from typing import Any
+import ssl
 
 import voluptuous as vol
 from aiohttp import ClientError
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorEntity
+from homeassistant.components.sensor import (
+    PLATFORM_SCHEMA,
+    SensorEntity,
+    SensorDeviceClass,
+)
 from homeassistant.const import CONF_SCAN_INTERVAL
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -55,7 +61,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     interval = timedelta(
         minutes=config.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
     )
-    async_add_entities([MultiDDNSSensor(hass, config, interval)], True)
+    entities = [MultiDDNSSensor(hass, config, interval)]
+    cert_dir = hass.config.path("ssl")
+    for domain in config.get(CONF_DOMAINS, []):
+        entities.append(CertificateExpirySensor(hass, domain, cert_dir))
+    async_add_entities(entities, True)
 
 
 class MultiDDNSSensor(SensorEntity):
@@ -149,4 +159,35 @@ class MultiDDNSSensor(SensorEntity):
                 return item.get("id")
         _LOGGER.debug("Domain %s not found in Dynu account", domain)
         return None
+
+
+class CertificateExpirySensor(SensorEntity):
+    """Sensor that reports certificate expiration timestamp for a domain."""
+
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+
+    def __init__(self, hass, domain: str, cert_dir: str) -> None:
+        self.hass = hass
+        self.domain = domain
+        self.cert_dir = cert_dir
+        self._attr_name = f"Certificate {domain}"
+        self._attr_native_value = None
+
+    async def async_update(self) -> None:
+        """Update sensor with certificate expiration."""
+        path = Path(self.cert_dir) / "live" / self.domain / "fullchain.pem"
+        if not path.exists():
+            self._attr_native_value = None
+            return
+        try:
+            cert = ssl._ssl._test_decode_cert(str(path))
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.debug("Failed to decode certificate for %s: %s", self.domain, err)
+            self._attr_native_value = None
+            return
+        not_after = datetime.strptime(
+            cert["notAfter"], "%b %d %H:%M:%S %Y %Z"
+        ).replace(tzinfo=timezone.utc)
+        self._attr_native_value = not_after
+        self._attr_extra_state_attributes = {"path": str(path)}
 
