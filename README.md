@@ -29,6 +29,11 @@ The integration registers a service `multiddns.issue_certificate` which uses
 certificates. By default certificates are stored in Home Assistant's `ssl`
 directory, but a custom path may be supplied.
 
+For each configured domain, a sensor named `sensor.certificate_<domain>` is
+created. The sensor reports the expiration timestamp of the certificate stored
+under `ssl/live/<domain>/fullchain.pem`, allowing you to monitor certificate
+validity from the Home Assistant UI.
+
 Example service call:
 
 ```yaml
@@ -48,7 +53,7 @@ data:
 
 This integration uses GitHub releases for versioning. Tagging a commit with a
 `v*` tag (for example, `v0.1`) triggers an automated workflow that publishes a
-GitHub release. The integration's current version is `0.1.0` as defined in the
+GitHub release. The integration's current version is `0.1.1` as defined in the
 [`manifest.json`](custom_components/multiddns/manifest.json).
 
 ## License
