@@ -1,0 +1,13 @@
+issue_certificate:
+  name: Issue certificate
+  description: Obtain or renew a Let's Encrypt certificate using certbot.
+  fields:
+    domain:
+      description: Domain or list of domains to generate certificates for.
+      example: example.com
+    email:
+      description: Email address for certbot registration.
+      example: user@example.com
+    cert_dir:
+      description: Directory to store certificates. Defaults to Home Assistant ssl path.
+      example: /ssl

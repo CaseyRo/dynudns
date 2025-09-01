@@ -1,6 +1,6 @@
 # Home Assistant Integration: Multi-DDNS
 
-This repository hosts the **Multi-DDNS** integration for Home Assistant. It provides a simple sensor that shows the current external IP address of your Home Assistant instance.
+This repository hosts the **Multi-DDNS** integration for Home Assistant. It exposes a sensor that reports the external IP address and, if configured, updates both DuckDNS and Dynu with the latest IPv4/IPv6 values.
 
 ## Installation
 
@@ -11,14 +11,37 @@ This repository hosts the **Multi-DDNS** integration for Home Assistant. It prov
 
 ## Usage
 
-Add the following to your `configuration.yaml` to enable the sensor:
+Add the following to your `configuration.yaml` to enable the sensor and configure domain updates:
 
 ```yaml
 sensor:
   - platform: multiddns
+    domains:
+      - myhome.duckdns.org
+      - example.dynu.net
+    duck_token: !secret duckdns_token     # Optional, required for DuckDNS domains
+    dynu_token: !secret dynu_api_token    # Optional, required for Dynu domains
+    scan_interval: 300                    # Optional, seconds between updates
 ```
 
-The sensor `sensor.external_ip` will show your current external IP address and update every five minutes.
+The sensor `sensor.external_ip` will show your current external IP address and update the configured domains on each interval.
+
+## Certificate management
+
+The integration registers a service `multiddns.issue_certificate` which uses
+[certbot](https://certbot.eff.org/) to request or renew Let's Encrypt
+certificates. By default certificates are stored in Home Assistant's `ssl`
+directory, but a custom path may be supplied.
+
+Example service call:
+
+```yaml
+service: multiddns.issue_certificate
+data:
+  domain: myhome.duckdns.org
+  email: user@example.com
+  cert_dir: /ssl   # optional
+```
 
 ## Repository structure
 

@@ -1,7 +1,7 @@
 {
   "domain": "multiddns",
   "name": "Multi-DDNS",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "documentation": "https://github.com/CaseyRo/dynudns",
   "requirements": [],
   "codeowners": ["@CaseyRo"],
