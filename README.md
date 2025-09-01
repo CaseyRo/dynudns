@@ -11,20 +11,16 @@ This repository hosts the **Multi-DDNS** integration for Home Assistant. It expo
 
 ## Usage
 
-Add the following to your `configuration.yaml` to enable the sensor and configure domain updates:
+Configure the integration via the Home Assistant UI:
 
-```yaml
-sensor:
-  - platform: multiddns
-    domains:
-      - myhome.duckdns.org
-      - example.dynu.net
-    duck_token: !secret duckdns_token     # Optional, required for DuckDNS domains
-    dynu_token: !secret dynu_api_token    # Optional, required for Dynu domains
-    scan_interval: 300                    # Optional, seconds between updates
-```
+1. Go to **Settings → Devices & Services → Add Integration**.
+2. Search for **Multi-DDNS**.
+3. Fill out the form with your domains (one per line), optional Dynu and DuckDNS tokens,
+   IP endpoints, wildcard toggle and update interval.
+4. After setup, use the **Options** button on the integration to adjust settings later.
 
-The sensor `sensor.external_ip` will show your current external IP address and update the configured domains on each interval.
+The integration creates a sensor `sensor.external_ip` that shows your current
+external IP address and updates the configured domains on each interval.
 
 ## Certificate management
 
