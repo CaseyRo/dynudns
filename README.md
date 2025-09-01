@@ -1,17 +1,30 @@
-# Home Assistant Add-ons: Multi-DDNS
+# Home Assistant Integration: Multi-DDNS
 
-This repository contains the Multi-DDNS add-on for Home Assistant.
+This repository hosts the **Multi-DDNS** integration for Home Assistant. It provides a simple sensor that shows the current external IP address of your Home Assistant instance.
 
-> **Important**: This is a Home Assistant *add-on* repository. It cannot be
-added through [HACS](https://hacs.xyz), which only manages integrations and
-frontend plugins. To use this project, add this repository to the Home
-Assistant add-on store instead.
+## Installation
+
+1. Ensure [HACS](https://hacs.xyz) is installed in your Home Assistant instance.
+2. Add this repository as a custom repository in HACS.
+3. Install the **Multi-DDNS** integration from HACS.
+4. Restart Home Assistant.
+
+## Usage
+
+Add the following to your `configuration.yaml` to enable the sensor:
+
+```yaml
+sensor:
+  - platform: multiddns
+```
+
+The sensor `sensor.external_ip` will show your current external IP address and update every five minutes.
 
 ## Repository structure
 
-This repository follows the Home Assistant add-on repository format:
+- `custom_components/multiddns/` – Integration source code
+- `hacs.json` – HACS metadata
 
-- `repository.yaml` – repository metadata
-- `multiddns/` – Multi-DDNS add-on
+## License
 
-See [multiddns](./multiddns) for the add-on documentation and source.
+[MIT](LICENSE)
