@@ -44,6 +44,13 @@ data:
 - `custom_components/multiddns/` – Integration source code
 - `hacs.json` – HACS metadata
 
+## Versioning
+
+This integration uses GitHub releases for versioning. Tagging a commit with a
+`v*` tag (for example, `v0.1`) triggers an automated workflow that publishes a
+GitHub release. The integration's current version is `0.1.0` as defined in the
+[`manifest.json`](custom_components/multiddns/manifest.json).
+
 ## License
 
 [MIT](LICENSE)
