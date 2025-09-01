@@ -1,0 +1,9 @@
+{
+  "domain": "multiddns",
+  "name": "Multi-DDNS",
+  "version": "0.2.0",
+  "documentation": "https://github.com/CaseyRo/dynudns",
+  "requirements": [],
+  "codeowners": ["@CaseyRo"],
+  "iot_class": "cloud_polling"
+}
