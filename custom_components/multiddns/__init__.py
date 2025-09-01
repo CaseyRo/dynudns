@@ -14,9 +14,12 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Multi-DDNS integration."""
-    _LOGGER.debug("Setting up Multi-DDNS integration")
+
+async def _async_register_services(hass: HomeAssistant) -> None:
+    """Register services for the Multi-DDNS integration."""
+
+    if hass.services.has_service(DOMAIN, "issue_certificate"):
+        return
 
     async def issue_certificate(call: ServiceCall) -> None:
         """Generate or renew a certificate using certbot."""
@@ -61,14 +64,19 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                     "Certificate generated for %s in %s", domain, cert_dir
                 )
 
-    hass.services.async_register(
-        DOMAIN, "issue_certificate", issue_certificate
-    )
+    hass.services.async_register(DOMAIN, "issue_certificate", issue_certificate)
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Set up the Multi-DDNS integration."""
+    _LOGGER.debug("Setting up Multi-DDNS integration")
+    await _async_register_services(hass)
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Multi-DDNS from a config entry."""
+    await _async_register_services(hass)
     await hass.config_entries.async_forward_entry_setup(entry, "sensor")
     return True
 
