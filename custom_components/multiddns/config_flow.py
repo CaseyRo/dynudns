@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from typing import Any
+import re
 
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.helpers import selector
 
 from .const import (
     DOMAIN,
@@ -32,13 +34,17 @@ class MultiDDNSConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input: dict[str, Any] | None = None):
         if user_input is not None:
             user_input[CONF_DOMAINS] = [
-                d.strip() for d in user_input[CONF_DOMAINS].splitlines() if d.strip()
+                d.strip()
+                for d in re.split(r"[\n,]+", user_input[CONF_DOMAINS])
+                if d.strip()
             ]
             return self.async_create_entry(title="Multi-DDNS", data=user_input)
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_DOMAINS): str,
+                vol.Required(CONF_DOMAINS): selector.TextSelector(
+                    selector.TextSelectorConfig(multiline=True)
+                ),
                 vol.Optional(CONF_DYNU_TOKEN): str,
                 vol.Optional(CONF_DUCK_TOKEN): str,
                 vol.Optional(CONF_IPV4, default=DEFAULT_IPV4): str,
@@ -66,7 +72,9 @@ class MultiDDNSOptionsFlow(config_entries.OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None):
         if user_input is not None:
             user_input[CONF_DOMAINS] = [
-                d.strip() for d in user_input[CONF_DOMAINS].splitlines() if d.strip()
+                d.strip()
+                for d in re.split(r"[\n,]+", user_input[CONF_DOMAINS])
+                if d.strip()
             ]
             return self.async_create_entry(data=user_input)
 
@@ -75,8 +83,10 @@ class MultiDDNSOptionsFlow(config_entries.OptionsFlow):
             {
                 vol.Required(
                     CONF_DOMAINS,
-                    default="\n".join(data.get(CONF_DOMAINS, [])),
-                ): str,
+                    default=", ".join(data.get(CONF_DOMAINS, [])),
+                ): selector.TextSelector(
+                    selector.TextSelectorConfig(multiline=True)
+                ),
                 vol.Optional(
                     CONF_DYNU_TOKEN, default=data.get(CONF_DYNU_TOKEN, "")
                 ): str,
