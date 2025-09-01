@@ -26,6 +26,23 @@ sensor:
 
 The sensor `sensor.external_ip` will show your current external IP address and update the configured domains on each interval.
 
+## Certificate management
+
+The integration registers a service `multiddns.issue_certificate` which uses
+[certbot](https://certbot.eff.org/) to request or renew Let's Encrypt
+certificates. By default certificates are stored in Home Assistant's `ssl`
+directory, but a custom path may be supplied.
+
+Example service call:
+
+```yaml
+service: multiddns.issue_certificate
+data:
+  domain: myhome.duckdns.org
+  email: user@example.com
+  cert_dir: /ssl   # optional
+```
+
 ## Repository structure
 
 - `custom_components/multiddns/` – Integration source code

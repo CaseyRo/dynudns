@@ -9,3 +9,5 @@
 - Added initial external IP sensor implementation.
 ## 2025-09-03
 - Implemented Dynu and DuckDNS update logic within sensor platform.
+## 2025-09-04
+- Added certbot service to generate and store SSL certificates.
