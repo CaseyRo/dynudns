@@ -11,3 +11,5 @@
 - Implemented Dynu and DuckDNS update logic within sensor platform.
 ## 2025-09-04
 - Added certbot service to generate and store SSL certificates.
+## 2025-09-05
+- Introduced GitHub release workflow and initialized versioning at 0.1.0.
